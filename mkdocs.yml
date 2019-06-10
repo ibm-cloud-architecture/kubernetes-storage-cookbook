@@ -1,7 +1,7 @@
 site_name: Kubernetes Storage Cookbook
 site_url: https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/
 nav:
-  - Home: intro.md
+  - Home: index.md
   - Part I - Cloud Storage Concepts: concepts.md
   - Part II - Kubernetes Storage Recipes: recipes.md
   - Appendix A - Performance Benchmarks: benchmarks.md
