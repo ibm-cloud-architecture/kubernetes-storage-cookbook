@@ -1,0 +1,8 @@
+site_name: Kubernetes Storage Cookbook
+nav:
+  - Introduction: intro.md
+  - Part I - Cloud Storage Concepts: concepts.md
+  - Part II - Kubernetes Storage Recipes: recipes.md
+  - Appendix A - Performance Benchmarks: benchmarks.md
+theme: readthedocs
+extra_css: ["extra.css"]
