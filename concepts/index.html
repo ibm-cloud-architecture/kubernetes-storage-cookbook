@@ -231,11 +231,55 @@
 </ul>
 <h1 id="kubernetes-storage-concepts">Kubernetes Storage Concepts</h1>
 <ul>
-<li>Persistent Volumes and Persistent Volume Claims</li>
-<li>Dynamic vs Static</li>
-<li>Retention Modes</li>
-<li>Access Modes</li>
-<li>Defining Storage Classes</li>
+<li>
+<p>Persistent Volumes and Persistent Volume Claims</p>
+<p>In kubernetes, the request for storage by an application is abstracted from the storage source. Other than some of the basic storage attributes discussed below the application does not typically know nor care where the storage comes from. Those details can be exposed to the application if needed for some reason, but typically, an application asks for the storage attributes it needs and the platform decides where it comes from.</p>
+<p>The chunk of storage made available for the application to consume is called a <em>Persistent Volume</em> or PV.</p>
+<p>When an application needs some persistent storage it creates a request called a <em>Peristent Volume Claim</em> or PVC.  When presented with a PVC, the platform will find a PV that meets the need and then bind the PVC to the PV.  Once a PV is bound, it is then unavailable to be bound to any other PVC unless it is a ReadWriteMany (discussed below) request which allows a single PV to be bound to many PVCs.</p>
+</li>
+<li>
+<p>Dynamic vs Static</p>
+<p>A <em>static</em> PV is one which is created ahead of time by a system operator who would typically create a number of different PVs with different types of attributes to account for various types of PVCs that may want to consume them.</p>
+<p>A <em>dynamic</em> PV, however, is one which is created <em>on demand</em>. With a dynamic storage provider, when an application creates a PVC request the storage provider will create a PV that meets all of the requirements of the PVC and the platform will bind it to the PVC on the fly. This precludes the need for manually creating a PV for any given storage request.</p>
+</li>
+<li>
+<p>Data Retention Modes</p>
+<p>One of the requirements of a PV is its <em>Data Retention Mode</em>.  This describes what happens to the data when the PVC which is bound to it is deleted - such as when an application is deleted from the cluster.</p>
+<ul>
+<li>
+<p><strong>Retain</strong> - If the retention mode is set to <em>retain</em> the PV is not deleted and no data on the PV is deleted. This is typically used when an application is uninstalled to be replaced by a newer version and the data should be retained between installations.
+It could also be used to make sure that the data in the PV is backed up before being removed.<br><br>
+<strong>IMPORTANT:</strong> A PV with a retention mode set to retain is <em>never</em> removed by the system and must be manually removed when it is no longer needed.  If this manual removal never happens and many applications are deployed this way, it could result in significant storage utilization growth over time. As a result, this retention mode should be used with caution.</p>
+</li>
+<li>
+<p><strong>Delete</strong> - A PV with a retention mode set to <em>delete</em> will cause the PV to be deleted when the PVC that is bound to it is deleted. This will result in the loss of any data which exists on the PV when it is deleted.  This is typically only used with dynamically created PVs.</p>
+</li>
+<li><strong>Recycle</strong> - When a PV has a retention mode of <em>recycle</em> the platform will try to remove any data on the PV and put it back into the pool to be bound to another PVC at some future time.<br><br>
+<strong>WARNING:</strong> When a PV has a <em>recycle</em> retention mode the platform will execute an <code>rm -rf /</code> on the root of the PV. If the PV is an NFS volume and the path of the NFS mount is the root of the NFS server it will effectively wipe the NFS server.  If the PV is a hostPath (a path on the local disk) and the path is set to <code>/</code>, the platform will wipe the entire local disk. Usage of this retention mode should be used with extreme caution and it is highly recommended that hostPath storage not be used with a kubernetes cluster.</li>
+</ul>
+</li>
+<li>
+<p><strong>Access Modes</strong></p>
+<p>Storage Access Modes define how a pod will use the PV. Note that the smallest unit of control in a kubernetes environment is a pod.  If a PV is mounted to a pod it is mounted to all containers in the pod.</p>
+<ul>
+<li>
+<p><strong>ReadOnlyMany (ROX)</strong> - Analogous to a CD-ROM.  PVs with this access mode can be mounted read-only by any number of pods, but none can write to it.  It can be useful for providing access to certification keys or common software or document repositories, etc.</p>
+</li>
+<li>
+<p><strong>ReadWriteOnce (RWO)</strong> - Only one pod can mount the PV at a time, but that pod can read from and write to it.</p>
+</li>
+<li>
+<p><strong>ReadWriteMany (RWX)</strong> - Many pods can mount the PV and all can read and write to it.  This access mode is not supported by many storage providers because of the requirement to keep all writers in sync to prevent race conditions.  Any application that utilizes RWX access mode PVs is responsible for managing coordinated writes to prevent data corruption or loss.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Storage Classes</strong></p>
+<p>All kubernetes storage is made available via storage providers and there are quite a few storage providers available: hostPath, NFS, Ceph, Gluster, vSphere, just to name a very few. Different storage providers will support different attributes for the PVs it controls. Before choosing a storage provider the attributes that are supported should be considered.</p>
+<p>The way a storage provider is utilized is through a storage class.  A storage class defines all the parameters needed by the storage provider to create a PV.  The specific attributes needed for the storage class depends on the storage provider.</p>
+<p>It is common for a storage class name to include information about the storage provider and storage other attributes of the storage provider.  For instance, a platform could have a storage class named "ceph-fast" indicating that if a PVC requests a PV created by this storage class it will be provided by the ceph storage provider backed by high IOPS storage. An operator may want to be even more descriptive and name the storage class "ceph-tier0" or "ceph-flash".</p>
+<p>Operators are advised to be caution using too much detail and creating too many different types of storage classes due to the risk of the developer not knowing what they all mean and chosing the wrong type using expensive storage when they only needed the the less expensive type. T-Shirt sizes (fast, medium, slow) seems to be a good way to label storage classes.</p>
+</li>
 </ul>
               
             </div>
