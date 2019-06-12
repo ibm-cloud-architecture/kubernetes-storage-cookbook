@@ -5,5 +5,6 @@ nav:
   - Part I - Cloud Storage Concepts: concepts.md
   - Part II - Kubernetes Storage Recipes: recipes.md
   - Appendix A - Performance Benchmarks: benchmarks.md
+  - Appendix B - Physical Storage Architecture Considerations: architecture.md
 theme: readthedocs
 extra_css: ["extra.css"]
