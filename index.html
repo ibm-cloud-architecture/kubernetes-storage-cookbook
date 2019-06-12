@@ -75,6 +75,11 @@
     <a class="" href="benchmarks/">Appendix A - Performance Benchmarks</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="architecture/">Appendix B - Physical Storage Architecture Considerations</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -108,6 +113,16 @@
             <div class="section">
               
                 <h1 id="introduction">Introduction</h1>
+<p>The term <em>storage</em> can mean different things to different people depending on one's perspective. An application developer who needs some storage could mean <em>object storage</em> aka a database in which they can store some data.</p>
+<p>That same application developer who needs to store same raw data on a disk could mean that the need <em>file storage</em>.  This is just a filesystem where random files can be stored.</p>
+<p>When an operations person talks about storage, they typically mean <em>block storage</em>.  That would be a chunck of raw storage which could be formatted with any kind of operating system depending the need.</p>
+<p>That same operations person could mean <em>virtual storage</em> which is essentially a file which represents the hard disk of a virtual machine.</p>
+<p>When speaking with a storage engineer one could be talking about <em>physical storage</em> - a Direct Access Storage Device (DASD) such is a mechanical disk, or SSD/NVMe/flash drive. That same engineer could be talking about a SAN based storage array such as an IBM Elastic Storage Server or XIV.</p>
+<p>In reality all of these things are <em>storage</em> and all are important when considering how to provide some space where an application can store some data which is the ultimate goal.</p>
+<p>This document will describe all aspects of providing storage for cloud based applications including recommendations for low level infrastructure all the way up to object storage databases.</p>
+<p><strong>Part I</strong> will talk about all of the various concepts associated with providing cloud storage.</p>
+<p><strong>Part II</strong> will provide specific recipes describing how to implement various cloud storage technologies.</p>
+<p><strong>Appendix A</strong> will provide performance benchmarks for various types of storage.  These benchmarks will carry out the exact same operations on various storage technologies and provide key performance indicators which can be compared to determine the best solution for your storage requirements.</p>
               
             </div>
           </div>
@@ -156,5 +171,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-06-10 21:06:32
+Build Date UTC : 2019-06-12 05:12:38
 -->

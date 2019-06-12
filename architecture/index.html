@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Part II - Kubernetes Storage Recipes - Kubernetes Storage Cookbook</title>
+  <title>Appendix B - Physical Storage Architecture Considerations - Kubernetes Storage Cookbook</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Part II - Kubernetes Storage Recipes";
-    var mkdocs_page_input_path = "recipes.md";
-    var mkdocs_page_url = "/kubernetes-storage-cookbook/recipes/";
+    var mkdocs_page_name = "Appendix B - Physical Storage Architecture Considerations";
+    var mkdocs_page_input_path = "architecture.md";
+    var mkdocs_page_url = "/kubernetes-storage-cookbook/architecture/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -59,36 +59,9 @@
     <a class="" href="../concepts/">Part I - Cloud Storage Concepts</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">Part II - Kubernetes Storage Recipes</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#introduction">Introduction</a></li>
-    
-
-    <li class="toctree-l2"><a href="#deploying-an-internal-cephrook-instance">Deploying an Internal Ceph/Rook Instance</a></li>
-    
-
-    <li class="toctree-l2"><a href="#integrating-with-an-external-ceph-instance">Integrating with an External Ceph Instance</a></li>
-    
-
-    <li class="toctree-l2"><a href="#deploying-an-internal-glusterfs-instance">Deploying an Internal GlusterFS Instance</a></li>
-    
-
-    <li class="toctree-l2"><a href="#integrating-with-an-external-glusterfs-instance">Integrating with an External GlusterFS Instance</a></li>
-    
-
-    <li class="toctree-l2"><a href="#integrating-with-vmware-datastores">Integrating with VMware datastores</a></li>
-    
-
-    <li class="toctree-l2"><a href="#integrating-with-an-s3-provider">Integrating with an S3 Provider</a></li>
-    
-
-    <li class="toctree-l2"><a href="#integrating-with-an-external-nfs-server">Integrating with an External NFS server</a></li>
-    
-
-    </ul>
+    <a class="" href="../recipes/">Part II - Kubernetes Storage Recipes</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -96,9 +69,15 @@
     <a class="" href="../benchmarks/">Appendix A - Performance Benchmarks</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../architecture/">Appendix B - Physical Storage Architecture Considerations</a>
+    <a class="current" href="./">Appendix B - Physical Storage Architecture Considerations</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#architecture">Architecture</a></li>
+    
+
+    </ul>
 	    </li>
           
         </ul>
@@ -123,7 +102,7 @@
     
       
     
-    <li>Part II - Kubernetes Storage Recipes</li>
+    <li>Appendix B - Physical Storage Architecture Considerations</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -133,17 +112,7 @@
           <div role="main">
             <div class="section">
               
-                <!-- Storage Implementation Recipes -->
-
-<h1 id="introduction">Introduction</h1>
-<p>Internal vs External</p>
-<h1 id="deploying-an-internal-cephrook-instance">Deploying an Internal Ceph/Rook Instance</h1>
-<h1 id="integrating-with-an-external-ceph-instance">Integrating with an External Ceph Instance</h1>
-<h1 id="deploying-an-internal-glusterfs-instance">Deploying an Internal GlusterFS Instance</h1>
-<h1 id="integrating-with-an-external-glusterfs-instance">Integrating with an External GlusterFS Instance</h1>
-<h1 id="integrating-with-vmware-datastores">Integrating with VMware datastores</h1>
-<h1 id="integrating-with-an-s3-provider">Integrating with an S3 Provider</h1>
-<h1 id="integrating-with-an-external-nfs-server">Integrating with an External NFS server</h1>
+                <h1 id="architecture">Architecture</h1>
               
             </div>
           </div>
@@ -151,10 +120,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../benchmarks/" class="btn btn-neutral float-right" title="Appendix A - Performance Benchmarks">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../concepts/" class="btn btn-neutral" title="Part I - Cloud Storage Concepts"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../benchmarks/" class="btn btn-neutral" title="Appendix A - Performance Benchmarks"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -180,10 +147,8 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../concepts/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../benchmarks/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../benchmarks/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

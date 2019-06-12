@@ -62,7 +62,7 @@
     <li class="toctree-l2"><a href="#storage-types">Storage Types</a></li>
     
 
-    <li class="toctree-l2"><a href="#on-premesis-storage-infrastructure">On-premesis Storage Infrastructure</a></li>
+    <li class="toctree-l2"><a href="#on-premesis-storage-infrastructure">On-Premesis Storage Infrastructure</a></li>
     
 
     <li class="toctree-l2"><a href="#hosted-storage-infrastructure">Hosted Storage Infrastructure</a></li>
@@ -85,6 +85,11 @@
             <li class="toctree-l1">
 		
     <a class="" href="../benchmarks/">Appendix A - Performance Benchmarks</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../architecture/">Appendix B - Physical Storage Architecture Considerations</a>
 	    </li>
           
         </ul>
@@ -123,24 +128,106 @@
 
 <h1 id="storage-types">Storage Types</h1>
 <ul>
-<li>Block Storage</li>
-<li>File Storage</li>
-<li>Object Storage</li>
+<li>
+<p><strong>Physical Storage</strong></p>
+<p>The physical storage which is used to back cloud storage technologies is important, especially in a kubernetes environment.  kuberetes master nodes utilize an etcd database and in an HA environment, at least three different instances of etcd. etcd is a high IOPS (Input/Output Operations Per Second) application which writes a large volume of data to the disk.  The performance of this database is critical to the performance of the cluster and the larger the cluster, the more data gets written</p>
+<p>For this reason, it is critical that the storage backing the filesystems where the etcd database is written be the fastest storage technology available.</p>
+<p>It should be noted that one need not necessarily implement NVMe drives to get the best performance.  Spreading the IOPS across hundreds of spindles on mechanical drives (such as is done with IBM Elastic Storage Servers) can also be very fast.</p>
+<p>Additionally, running NVMe drives with a slow virtual storage technology can render them no faster than a mechanical disk. For more information see <strong>Appendix A</strong>.</p>
+<p>See the <strong>On-Premesis Storage Infrastructure</strong> below for more infrastruction on recommendations on how to properly configure physical storage infrastructure for maximum performance.</p>
+</li>
+<li>
+<p><strong>Block Storage</strong></p>
+<p>Block storage technologies provide raw chunks of storage which usually must be formatted before they can be used.</p>
+<p>One example of block storage would be a LUN/Volume created on a SAN storage device which can be mapped to a remote host and appears to that host as a physical disk.</p>
+<p>Another example would be a Ceph RBD volume.  Once created and mapped to a host, such a disk shows up on the filesystem like any other disk.</p>
+<p>In both of these cases the block storage volume must be formatted with a filesystem before it can be used.  This detail is hidden in the Ceph kubernetes storage provider because the Ceph storage driver will put a filesystem on the block device prior to mounting to the container.  It is still a block device, it has just been formatted prior to use.</p>
+</li>
+<li>
+<p><strong>File Storage</strong></p>
+<p>File storage is a storage device which is provided pre-formatted with a file system prior to making it available to be mounted.</p>
+<p>Probaly the best example of this type of storage is NFS (Network File System).  NFS filesytems are exported by an NFS server and have already been formatted before they are exported.  Clients that mount these filesystems do not have to format the device prior to use.</p>
+<p>Another good example of file storage would be CephFS.</p>
+</li>
+<li>
+<p><strong>Object Storage</strong></p>
+<p>Object storage is simply a database which has some kind of an API which can be used for storing chunks of data, either formatted or unformatted.  Object storage need not be mounted to a filesystem to be used, data is normally storage via REST API calls or SQL commands.</p>
+<p>In cloud native applications, it is very common to deploy a separate module/pod/container which contains a database which can then be exposed to the application for object storage.  In this case, the container hosting the object database will likely need file or block storage to hold the database files, but the application itself will consume the objec storage provided by the database.</p>
+<p>In other cases, applications could consume object storage which is hosted somewhere out on the internet or on some legacy physical infrastructure.</p>
+<p>Examples of object storage technologies would be Redis, CouchDB/Cloudant, minio, mongoDB, mariaDB, etc.</p>
+<p>Example of hosted object storage technologies woudl be cloudant.com, redis.com, or an existing DB2 database hosted on legacy infrastructure in the enterprise.</p>
+</li>
 </ul>
-<h1 id="on-premesis-storage-infrastructure">On-premesis Storage Infrastructure</h1>
+<h1 id="on-premesis-storage-infrastructure">On-Premesis Storage Infrastructure</h1>
 <ul>
-<li>SAN vs Converged</li>
-<li>Avoiding Network Congestion</li>
+<li>
+<p><strong>SAN (Storage Area Network) vs Converged Networking</strong></p>
+<p>There has been a significant amount of discussion around the topic of converged or hyper-converted networks.  A converged network is one where data and storage network traffic are combined onto a single infrastructure. The topic is much more broad than this simple statement, but this is the aspect that is of most concern to the cloud storage topic.</p>
+<p>Experience shows that a converged or hyper-conconverged infrastructure may or may not provide better performance based on a number of factors. We will not attempt to make a recommendation on whether a company should use SAN or a converged or hyper-converged infrastructure, but one thing that will be clear from looking at the benchmarks provided in Appendix A is that what is advertised to be better, faster technology may not be if it is not implemented in the right way.</p>
+<p>Prior to choosing a storage technology it is highly recommended that proper performance testing be performed to ensure that the architecture to be implemented provides the performance that is desired and expected.</p>
+<p>Experience shows that storage provider technologies which provide block storage over the data network (such as Ceph or Gluster) consume a significant number of CPU cycles serving up disk I/O over a network which is designed for traditional data.</p>
+<p>SAN storage technologies are designed for disk I/O traffic and the performance of an 8GB SAN will greatly out-perform a 10GB data network in a converged environment.</p>
+</li>
+<li>
+<p><strong>Storage Network Congestion in a kubernetes Environment</strong></p>
+<p>Storage traffic patterns in a kubernetes environment is significantly different than in a traditional physical or even virtual environment.</p>
+<p>Historically, physical infrastructures were easy enough to understand because each physical machine was an endpoint and occupied one port on a SAN switch.  Communication paths over the SAN are well known and constant.</p>
+<p>The advent of virtual networks changed things a bit in that in a virtual environment you could now have many more volumes mapped to a single physical host. In an HPC (High Performance Computing) environment, a single physical node could have dozens or more virtual machines, each of which could have a volume served up over the SAN.</p>
+<p>Ultimately, however, virtual machines do not move around very much and when they do, they move to other physical machines utilizing the same mount points which were setup ahead of time and do not change.</p>
+<p>In the world of kubernetes, however, workloads are moved around in the infrastructure and scale out and back with regularity. As workloads move to different worker nodes these volumes are moved around to various machines.  This leads to a situation where storage traffic can become significantly unbalanced on the SAN and a single compute node could potentially have hundreds of endpoints depending on the number of containers running on the node.</p>
+<p>SAN networks can become congested not only because of high traffic, but also because of a high number of endpoints behind a single SAN switch port.  In an HPC environment where a single physical node could host dozens of virtual machines and each virtual machine could be hosting hundreds or even thousands of endpoints in a dynamically provisoined environment, network congestion can become a significant problem.</p>
+<p>When the SAN network becomes congested, it can backup across the SAN infrastructure negatively impacting completely unrelated workloads.</p>
+<p>In relatively small kubernetes environments, this type of congestion is normally not a problem, however, large clusters with hundreds or thousands of worker nodes or an environment which is hosting dozens or hundreds of smaller clusters, significant network congestion can be a significant problem, especially when workload storage is being provided inside the cluster itself (vs externally hosted cloud storage).</p>
+<p>See <strong>Appendix B</strong> below for recommendations on properly architecting a SAN infrastructure which can handle the extremely dynamic workloads that are standard in a kubernetes environment.</p>
+</li>
 </ul>
 <h1 id="hosted-storage-infrastructure">Hosted Storage Infrastructure</h1>
+<p>One option for deploying kubernetes clusters is to deploy them into a hosted Infrastructure-as-a-Service (IaaS) provider such is IBM Cloud or Amazon Web Services (AWS). Implmenting workload storage in these environments allows the developer to consume local storage which is provided by the cloud provider.</p>
+<p>Storage hosted by these cloud providers can be either block storage on which you can install whatever storage technology you like, or object storage to which you can write data directly via an API.</p>
+<p>Hosted storage can normally be purchased with various IOPS so you can tailor the storage back-end to the type of storage you need.</p>
+<p>In such an environment the operator has very little control over how the underlying physical infrastructure is architected.  This should be considered if planning to implement large scale kubernetes environments in a hosted environment (see <strong>Storage Network Congestion in a kubernetes Environment</strong> above).</p>
+<ul>
+<li>
+<p>Hosted Block Storage</p>
 <ul>
 <li>IBM Cloud Storage</li>
 <li>Amazon S3</li>
 </ul>
+</li>
+<li>
+<p>Hosted Object Storage</p>
+<ul>
+<li>Cloudant.com</li>
+<li>Redis.com</li>
+</ul>
+</li>
+</ul>
 <h1 id="resilience-performance-and-scalability">Resilience, Performance, and Scalability</h1>
 <ul>
-<li>Replication vs Distribution</li>
-<li>IOPS Considerations</li>
+<li>
+<p><strong>Replication vs Distribution</strong></p>
+<p>Data resilience in a legacy environment is normally dependant upon replication.  This means using data syncing technologies to replicate data between databases or storage devices.</p>
+<p>This kind of resiliency plan, however, can be extremely expensive requiring duplicates of all the physical infrastructure used to keep these replicas.</p>
+<p>As a result, many companies are willing to settle for backup technologies to keep offline copies of critical data. These backup storage technologies are typically much less expensive than the online replication technologies, but an outage could result in data loss between the time of the outage an the last time a backup was made.</p>
+<p>Cloud Native technologies, however, handle resilience in a different way. Object storage technologies such is IBM's CleverSafe break the data up into chunks and store slices across multiple physical devices or even datacenters.  With many nodes running in many environments in different geographys, data is secure and resilient so long as a quorum of nodes is up and available.</p>
+<p>So, if the CleverSafe infrastructure is made up of 12 nodes, as many as 5 could faile with no data loss.  If nodes are running in separate geographies or at least separate physical locations, the likelihood of losing more than half of the total nodes is extremely low.</p>
+<p>It is highly recommended that applications utilize modern cloud native storage technologies to maximize resilience at minimal cost.</p>
+<p>It should be noted that, whereas this type of technology provides for extreme availability and resilience, it does not protect against data corruption. If garbage is written to the database the database contains garbage and absent some additional procedures and planning, there is no way to reverse it.</p>
+<p>This means that there still is a good use case for making regular backups of data. The important thing here, though, is that in a kubernetes environment, application data can be backed up at the workload storage location vs backing up the entire cluster and everything on it, significantly reducing the amount of space needed for a proper backup.</p>
+<p><strong>CAUTION:</strong> When providing internal storage technologies within a kubernetes cluster (e.g. Ceph or GlusterFS), the more bricks/OSDs you provide the more resilient your infrastructure is likely to be.  Make sure to Use anti-affinity rules to make sure each of the nodes hosting this storage is running on separte physical nodes and each of the bricks/OSDs are backed by separate physical infrastructure.</p>
+<p>If all nodes or a majority of nodes are running on a single physical host and that host fails, your storage techonogy will also fail due to a lack of enough backing storage to complete a transaction. This could lead to data loss or corruption.</p>
+</li>
+<li>
+<p><strong>IOPS Considerations</strong></p>
+<p>As noted above, kubernetes master nodes running etcd require significantly higher IOPS than most other nodes.  High IOPS storage is typically also much more expensive than lower IOPS storage.  Since only the etcd database needs to be stored on high IOPS storage, that expensive storage utilization can be minimized by mounting only the path on the disk where the etcd database is stored from high IOPS storage and leaving the rest of the master nodes backed by lower and less expensive IOPS storage.</p>
+<p>Some time sensitive workloads will also need high IOPS storage.  It is recommended to provide multiple storage classes at various tiers so the developer can choose the storage that best supports the requirements of the workload.</p>
+</li>
+<li>
+<p><strong>kubernetes Workload Scalability's affects on Storage</strong></p>
+<p>When creating an application architecture, some developers may consider using a ReadWriteMany persistent Volume (see <strong>kubenetes Storage Concepts</strong> below for more information on persistent volumes) when they need multiple micro services to have access to the same persistent storage data.</p>
+<p>Caution should be used, however, because if using appliation auto-scaling in kubernetes, when an application scales out each container in each pod with a ReadWriteMany persistent volume will have that persistent volume mounted.  This could lead to storage network congestion negatively impacting not only the entire kubernetes cluster, but also everything else running on the SAN infrastructure (see <strong>Storage Network Congestion in a kubernetes Environment</strong> above).</p>
+<p>A better architecture utilizes a micro service with an API to serve up data from a single ReadWriteOnly persistent volume which is then consumed by all workloads that need access to that data.</p>
+</li>
 </ul>
 <h1 id="kubernetes-storage-concepts">Kubernetes Storage Concepts</h1>
 <ul>
