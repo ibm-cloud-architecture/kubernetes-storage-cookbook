@@ -232,18 +232,18 @@
 <h1 id="kubernetes-storage-concepts">Kubernetes Storage Concepts</h1>
 <ul>
 <li>
-<p>Persistent Volumes and Persistent Volume Claims</p>
+<p><strong>Persistent Volumes and Persistent Volume Claims</strong></p>
 <p>In kubernetes, the request for storage by an application is abstracted from the storage source. Other than some of the basic storage attributes discussed below the application does not typically know nor care where the storage comes from. Those details can be exposed to the application if needed for some reason, but typically, an application asks for the storage attributes it needs and the platform decides where it comes from.</p>
 <p>The chunk of storage made available for the application to consume is called a <em>Persistent Volume</em> or PV.</p>
 <p>When an application needs some persistent storage it creates a request called a <em>Peristent Volume Claim</em> or PVC.  When presented with a PVC, the platform will find a PV that meets the need and then bind the PVC to the PV.  Once a PV is bound, it is then unavailable to be bound to any other PVC unless it is a ReadWriteMany (discussed below) request which allows a single PV to be bound to many PVCs.</p>
 </li>
 <li>
-<p>Dynamic vs Static</p>
+<p><strong>Dynamic vs Static</strong></p>
 <p>A <em>static</em> PV is one which is created ahead of time by a system operator who would typically create a number of different PVs with different types of attributes to account for various types of PVCs that may want to consume them.</p>
 <p>A <em>dynamic</em> PV, however, is one which is created <em>on demand</em>. With a dynamic storage provider, when an application creates a PVC request the storage provider will create a PV that meets all of the requirements of the PVC and the platform will bind it to the PVC on the fly. This precludes the need for manually creating a PV for any given storage request.</p>
 </li>
 <li>
-<p>Data Retention Modes</p>
+<p><strong>Data Retention Modes</strong></p>
 <p>One of the requirements of a PV is its <em>Data Retention Mode</em>.  This describes what happens to the data when the PVC which is bound to it is deleted - such as when an application is deleted from the cluster.</p>
 <ul>
 <li>
