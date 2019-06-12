@@ -136,7 +136,7 @@
 
 # Kubernetes Storage Concepts
 
-  * Persistent Volumes and Persistent Volume Claims
+  * **Persistent Volumes and Persistent Volume Claims**
     
     In kubernetes, the request for storage by an application is abstracted from the storage source. Other than some of the basic storage attributes discussed below the application does not typically know nor care where the storage comes from. Those details can be exposed to the application if needed for some reason, but typically, an application asks for the storage attributes it needs and the platform decides where it comes from.
 
@@ -144,13 +144,13 @@
 
     When an application needs some persistent storage it creates a request called a *Peristent Volume Claim* or PVC.  When presented with a PVC, the platform will find a PV that meets the need and then bind the PVC to the PV.  Once a PV is bound, it is then unavailable to be bound to any other PVC unless it is a ReadWriteMany (discussed below) request which allows a single PV to be bound to many PVCs.
 
-  * Dynamic vs Static
+  * **Dynamic vs Static**
 
     A *static* PV is one which is created ahead of time by a system operator who would typically create a number of different PVs with different types of attributes to account for various types of PVCs that may want to consume them.
 
     A *dynamic* PV, however, is one which is created *on demand*. With a dynamic storage provider, when an application creates a PVC request the storage provider will create a PV that meets all of the requirements of the PVC and the platform will bind it to the PVC on the fly. This precludes the need for manually creating a PV for any given storage request.
 
-  * Data Retention Modes
+  * **Data Retention Modes**
 
     One of the requirements of a PV is its *Data Retention Mode*.  This describes what happens to the data when the PVC which is bound to it is deleted - such as when an application is deleted from the cluster.
 
