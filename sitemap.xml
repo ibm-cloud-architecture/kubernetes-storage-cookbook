@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/</loc>
-     <lastmod>2019-06-12</lastmod>
+     <lastmod>2019-06-21</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/concepts/</loc>
-     <lastmod>2019-06-12</lastmod>
+     <lastmod>2019-06-21</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/recipes/</loc>
-     <lastmod>2019-06-12</lastmod>
+     <lastmod>2019-06-21</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/benchmarks/</loc>
-     <lastmod>2019-06-12</lastmod>
+     <lastmod>2019-06-21</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://ibm-cloud-architecture.github.io/kubernetes-storage-cookbook/architecture/</loc>
-     <lastmod>2019-06-12</lastmod>
+     <lastmod>2019-06-21</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
