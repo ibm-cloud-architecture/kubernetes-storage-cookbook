@@ -89,7 +89,7 @@
         
             <li><a class="toctree-l3" href="#recipe-6-integrating-with-an-existing-vmware-vcenter-65-instance">Recipe 6: Integrating with an existing VMware vCenter 6.5 Instance</a></li>
         
-            <li><a class="toctree-l3" href="#configure-vsphere-for-use-by-icp">Configure vSphere for use by ICP</a></li>
+            <li><a class="toctree-l3" href="#recipe-7-integrating-with-an-existing-s3-storage-provider">Recipe 7: Integrating with an existing S3 Storage Provider</a></li>
         
         </ul>
     
@@ -780,7 +780,7 @@ Execute the following commands as the <strong>ceph-deploy</strong> user on the a
 <p>It is important to note that using VMware storage for dynamic storage provisioning uses the VMware API and this is <em>not</em> vSAN.  vSAN is a completely separate technology which takes storage local to multiple hypervisors and makes it available as a VMware datastore.</p>
 <p>To use VMware for dynamic storage provisioning you need an existing VMware datastore and access to the API server with the needed credentials for creating storage volumes.  That is what this tutorial will focus on.</p>
 <p>All of the prerequisites noted here must be complete prior to installing ICP.</p>
-<h2 id="configure-vsphere-for-use-by-icp">Configure vSphere for use by ICP</h2>
+<p><strong>Configure vSphere for use by ICP</strong></p>
 <p>First, to use dynamic storage provisioning on VMware you must create a user with the proper VMware permissions that can be used to interact with VMware.</p>
 <p>The IBM knowledgebase for this topic can be found at https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.3/manage_cluster/add_vsphere.html.</p>
 <p>Prerequisites for creating the vssphere storage can be found at https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0.3/installing/cloud_provider_vsphere.html#prereq</p>
